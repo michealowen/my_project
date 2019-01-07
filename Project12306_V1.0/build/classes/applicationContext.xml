@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+		   http://www.springframework.org/schema/beans 
+		   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		   http://www.springframework.org/schema/tx 
+		   http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		   http://www.springframework.org/schema/aop 
+		   http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		   http://www.springframework.org/schema/context 
+		   http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	<!-- 配置外部的属性文件 -->
+	<context:property-placeholder location="classpath:db-config.properties" />
+
+	<bean id="dataSource" destroy-method="close"
+		class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="validationQuery" value="SELECT 1" />
+        <property name="testOnBorrow" value="true"/>
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+
+		<property name="packagesToScan">
+			<list>
+				<value>entity</value>
+			</list>
+		</property>
+		<!-- hibernate属性 -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.show_formate">true</prop>
+			</props>
+		</property>
+		<!-- 映射文件 -->
+		<property name="mappingResources">
+			<list>
+				<value>entity/users.hbm.xml</value>
+				<value>entity/Train_copy_copy.hbm.xml</value>
+				<value>entity/station_name.hbm.xml</value>
+				<value>entity/station.hbm.xml</value>
+			</list>
+		</property>
+	</bean>
+
+
+	<!-- 配置业务层的类 -->
+	<bean id="service" class="service.loginservice">
+		<property name="userd" ref="dao"></property>
+	</bean>
+
+	<!-- 配置数据接口Dao类 -->
+	<bean id="dao" class="dao.userDao">
+	<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+
+	<bean id="act" class="action.action">
+		<property name="loginser" ref="service"></property>
+		<property name="listser"  ref="listservice"></property>
+		<property name="stationMser"  ref="stationMser"></property>
+		<property name="trainMser"  ref="trainMser"></property>
+	</bean>
+	
+	<bean id="find" class="action.findpathaction"> 
+	<property name="findser" ref="findservice"></property>
+	</bean>
+	
+	<bean id="findservice" class="service.findpathService">
+	<property name="userd" ref="dao"></property>
+	</bean>
+	
+	<bean id="listservice" class="service.listservice">
+		<property name="userd" ref="dao"></property>
+	</bean>
+	
+	<bean id="stationMser" class="service.stationManSer">
+	<property name="userd" ref="dao"></property>
+	</bean>
+	
+	<bean id="trainMser" class="service.trainManSer">
+	<property name="userd" ref="dao"></property>
+	</bean>
+</beans>

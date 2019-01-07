@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<!-- <constant name="struts.objectFactory" value="spring" /> -->
+	<package name="ajax" namespace="/" extends="json-default">
+		<action name="findpath" class="find" method="findpath">
+			<result type="json">
+				<param name="root">allresult</param>
+			</result>
+
+		</action>
+		
+		 <action name="list" class="act" method="trainlist">
+		<result type="json">
+				<param name="root">trainlist</param>
+			</result>
+		</action>
+	</package>
+	<package name="default" namespace="/" extends="struts-default">
+		<action name="login" class="act" method="login">
+			<!-- <action name="login" class="loginaction" > -->
+			<!--省略Action其他配置 -->
+			<result name="success">/main.jsp</result> 
+			<result name="fail">/loginFail.jsp</result> 
+		
+		</action>
+
+ 
+		
+		<action name="delete" class="act" method="trainDel">
+			<!-- <action name="login" class="loginaction" > -->
+			<!--省略Action其他配置 -->
+			<result name="success">/loginSuccess.jsp</result> 
+			<result name="fail">/loginFail.jsp</result>
+
+		</action>
+		
+		<action name="stationMan" class="act" method="stationMan">
+			<!-- <action name="login" class="loginaction" > -->
+			<!--省略Action其他配置 -->
+			<!--<result name="success">/loginSuccess.jsp</result> -->
+			<result name="success">/loginSuccess.jsp</result>
+
+		</action>
+
+        <action name="trainMan" class="act" method="trainMan">
+			<!-- <action name="login" class="loginaction" > -->
+			<!--省略Action其他配置 -->
+			<!--<result name="success">/loginSuccess.jsp</result> -->
+			<result name="success">/loginSuccess.jsp</result>
+
+		</action>
+        
+	</package>
+
+</struts>

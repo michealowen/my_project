@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+     <class name="entity.station" table="station">
+     <id name="id" column="id"> 
+       <generator class="assigned"/>
+     </id>
+     <property name="First_station" column="First_station"/>
+     <property name="Next_station"  column="Next_station"></property>
+     <property name="Run_distance"  column="Run_distance"></property>
+     </class>
+</hibernate-mapping>
+
+
+<!--编写：刘继涛 -->

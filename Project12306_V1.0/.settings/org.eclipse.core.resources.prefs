@@ -1,0 +1,10 @@
+eclipse.preferences.version=1
+encoding//WebContent/main.jsp=UTF-8
+encoding//WebContent/showlist.jsp=UTF-8
+encoding//src/action/action.java=UTF-8
+encoding//src/dao/userDao.java=UTF-8
+encoding//src/service/findpathService.java=UTF-8
+encoding//src/service/listservice.java=UTF-8
+encoding//src/service/loginservice.java=UTF-8
+encoding//src/service/stationManSer.java=UTF-8
+encoding/<project>=UTF-8
