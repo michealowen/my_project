@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/hibernate-core"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/structs2-core"/>
+	<classpathentry kind="lib" path="D:/Java/json-lib-2.4-jdk15.jar所需全部JAR包/json-lib-2.4-jdk15.jar所需全部JAR包/commons-beanutils-1.8.0.jar"/>
+	<classpathentry kind="lib" path="D:/Java/json-lib-2.4-jdk15.jar所需全部JAR包/json-lib-2.4-jdk15.jar所需全部JAR包/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="D:/Java/json-lib-2.4-jdk15.jar所需全部JAR包/json-lib-2.4-jdk15.jar所需全部JAR包/commons-lang-2.5.jar"/>
+	<classpathentry kind="lib" path="D:/Java/json-lib-2.4-jdk15.jar所需全部JAR包/json-lib-2.4-jdk15.jar所需全部JAR包/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="D:/Java/json-lib-2.4-jdk15.jar所需全部JAR包/json-lib-2.4-jdk15.jar所需全部JAR包/ezmorph-1.0.6.jar"/>
+	<classpathentry kind="lib" path="D:/Java/json-lib-2.4-jdk15.jar所需全部JAR包/json-lib-2.4-jdk15.jar所需全部JAR包/json-lib-2.4-jdk15.jar"/>
+	<classpathentry kind="lib" path="D:/Java/json-lib-2.4-jdk15.jar所需全部JAR包/json-lib-2.4-jdk15.jar所需全部JAR包/json-org.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="D:/Java/apache-tomcat-7.0.75-windows-x64/apache-tomcat-7.0.75/lib/servlet-api.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="D:/oracle/product/11.2.0/dbhome_1/jdbc/lib/oracle11g驱动jar包/oracle11g驱动jar包/ojdbc5.jar"/>
+	<classpathentry kind="lib" path="D:/oracle/product/11.2.0/dbhome_1/jdbc/lib/oracle11g驱动jar包/oracle11g驱动jar包/ojdbc6.jar"/>
+	<classpathentry kind="lib" path="D:/oracle/product/11.2.0/dbhome_1/jdbc/lib/oracle11g驱动jar包/oracle11g驱动jar包/ojdbc6_g.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>
