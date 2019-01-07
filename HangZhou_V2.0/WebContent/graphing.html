@@ -1,0 +1,320 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="css/Projectcss.css">
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ENx4XoKCKSa33qlZI0aCjFxS4OFPZgAX"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+<script type="text/javascript" src="http://lbsyun.baidu.com/jsdemo/data/points-sample-data.js"></script>
+<!--加载鼠标绘制工具-->
+<script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
+<link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+<!--加载检索信息窗口-->
+<script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.js"></script>
+<link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.css" />
+<!-- ECharts单文件引入 -->
+<script src="js/echart-all.js" charset="UTF-8"></script>
+<title>杭州公共自行车查询系统</title>
+</head>
+<body>
+<div id="top">
+    <span>杭州公共自行车可视化系统</span>
+</div>
+<div>
+<div id="allmap">
+</div>
+<div class = "fiexdiv">
+    <div class = "label">
+        <p>100</p>
+        <p>50</p>
+        <p>0</p>
+    </div>
+    <div id="rec"></div>
+</div>
+</div>
+<div id="main"></div>
+<div class="middle">
+<span>借还数量筛选</span>
+<div class="form" >
+<form name="select" method="post">
+    <select id="sel"  onchange="">
+    <!--  <option>---请选择---</option>-->
+    <option value="1">1</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="20">20</option>
+    <option value="50">50</option>
+    <option value="100">100</option>   
+    </select>
+<input type="datetime-local" id="timeSelStart" name="timeSelStart" value="2014-04-10T00:00"/> 
+<input type="datetime-local" id="timeSelEnd" name="timeSelEnd" value="2014-04-10T00:00"/>
+<input class = "freshbtn" type="button" onclick="func()" value="绘制借还流量" >
+</form>
+</div> 
+<div class = "btnarea">
+ <input class = "freshbtn" type="button" onclick="fresh()" value="刷新站点" >
+ <input class = "freshbtn" type="button" onclick="circos()" value="弦图">
+ <input class = "freshbtn" type="button" onclick="leftKey()" value="绘制区域">
+ <input class = "freshbtn" type="button" onclick="clearAll()" value="清除区域">
+ <input class = "freshbtn" type="button" onclick="judge()" value="区域流量">
+</div>
+</div>
+<script type="text/javascript" src="js/jquery.min.js" ></script>
+<script type="text/javascript" src="js/d3.js" ></script>
+<script type="text/javascript" src="js/graph.js" ></script>
+<script type="text/javascript" src="js/fresh.js" ></script>
+<script type="text/javascript" src="js/func.js" ></script>
+<script type="text/javascript">
+
+    var rows = new Array();
+    var arr  = new Array();
+    var points = []; //全局变量,点
+    opts = {  
+            width : 200,     // 信息窗口宽度  
+            height: 100,     // 信息窗口高度  
+            title :  "", // 信息窗口标题  
+            enableMessage:true//设置允许信息窗发送短息  
+            };
+    
+    //弧线颜色
+    var options = {
+            size: BMAP_POINT_SIZE_SMALL,
+            shape: BMAP_POINT_SHAPE_CIRCLE,
+            color: '#d340c3'
+        }
+
+    var a = d3.rgb(0,238,0);      //绿色
+    var b = d3.rgb(255,255,0);    //黄色  
+    var c = d3.rgb(255,0,0);      //红色
+    var compute1 = d3.interpolate(a,b);   //数量较少    
+    var compute2 = d3.interpolate(b,c);   //数量较多
+    
+    function getColor(weight){
+    	if(weight>=0&&weight<=50)
+    		return compute1(weight*2/100);
+    	if(weight>50&&weight<=100)
+    		return compute2(weight*2/100);
+    }
+    
+    function openInfo(content,e){  
+        //var p = e.target;  
+        
+        var point = new BMap.Point(e.point.lng, e.point.lat);  
+        var infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象   
+        map.openInfoWindow(infoWindow,point);                //开启信息窗口  
+    }
+    function select(arr,item){
+    	var i = 0;
+    	for(i=0;i<arr.length;i++){
+    		if(arr[i]==item)
+    			return i;
+    	}
+    }
+    function create(id,title,pointx,pointy,address) {
+    	this.id = id;
+        this.title = title;
+        this.pointx = pointx;
+        this.pointy = pointy;
+        this.address = address;
+    }
+    function addArrow(polyline,length,angleValue,color1,weight){ //绘制箭头的函数  
+    	var linePoint=polyline.getPath();//线的坐标串  
+    	var arrowCount=linePoint.length; 
+    	middle=arrowCount/2;
+    	  
+    	var pixelStart=map.pointToPixel(linePoint[Math.floor(middle)]);  
+    	var pixelEnd=map.pointToPixel(linePoint[Math.floor(middle)+1]);
+    	var pixelFinal=map.pointToPixel(linePoint[Math.floor(middle)+2]);
+    	var angle=angleValue;//箭头和主线的夹角  
+    	var r=length; // r/Math.sin(angle)代表箭头长度  
+    	var delta=0; //主线斜率，垂直时无斜率  
+    	var param=0; //代码简洁考虑  
+    	var pixelTemX,pixelTemY;//临时点坐标  
+    	var pixelX,pixelY,pixelX1,pixelY1;//箭头两个点  
+    	if(pixelFinal.x-pixelStart.x==0){ //斜率不存在是时  
+    	    pixelTemX=pixelEnd.x;  
+    	    if(pixelFinal.y>pixelStart.y)  
+    	    {  
+    	    pixelTemY=pixelEnd.y-r;  
+    	    }  
+    	    else  
+    	    {  
+    	    pixelTemY=pixelEnd.y+r;  
+    	    }     
+    	    //已知直角三角形两个点坐标及其中一个角，求另外一个点坐标算法  
+    	    pixelX=pixelTemX-r*Math.tan(angle);   
+    	    pixelX1=pixelTemX+r*Math.tan(angle);  
+    	    pixelY=pixelY1=pixelTemY;  
+    	}  
+    	else  //斜率存在时  
+    	{  
+    	    delta=(pixelFinal.y-pixelStart.y)/(pixelFinal.x-pixelStart.x);  
+    	    param=Math.sqrt(delta*delta+1);  
+    	  
+    	    if((pixelFinal.x-pixelStart.x)<0) //第二、三象限  
+    	    {  
+    	    pixelTemX=pixelEnd.x+ r/param;  
+    	    pixelTemY=pixelEnd.y+delta*r/param;  
+    	    }  
+    	    else//第一、四象限  
+    	    {  
+    	    pixelTemX=pixelEnd.x- r/param;  
+    	    pixelTemY=pixelEnd.y-delta*r/param;  
+    	    }  
+    	    //已知直角三角形两个点坐标及其中一个角，求另外一个点坐标算法  
+    	    pixelX=pixelTemX+ Math.tan(angle)*r*delta/param;  
+    	    pixelY=pixelTemY-Math.tan(angle)*r/param;  
+    	  
+    	    pixelX1=pixelTemX- Math.tan(angle)*r*delta/param;  
+    	    pixelY1=pixelTemY+Math.tan(angle)*r/param;  
+    	}  
+    	  
+    	var pointArrow=map.pixelToPoint(new BMap.Pixel(pixelX,pixelY));  
+    	var pointArrow1=map.pixelToPoint(new BMap.Pixel(pixelX1,pixelY1));  
+    	var Arrow = new BMap.Polyline([  
+    	    pointArrow,  linePoint[Math.ceil(middle)],  pointArrow1  ], {strokeColor:color1, strokeWeight:0.2*weight, strokeOpacity:0.7});  
+    	map.addOverlay(Arrow);  
+    	 
+    	}  
+    var map = new BMap.Map("allmap");  // 创建Map实例
+    map.centerAndZoom("杭州",12);       // 初始化地图,用城市名设置地图中心点
+    map.setMapStyle({style:'grayscale'});
+    map.enableScrollWheelZoom(true);  //启用滚轮放大缩小  
+    //向地图中添加缩放控件   
+    var ctrlNav = new window.BMap.NavigationControl({  
+         anchor: BMAP_ANCHOR_TOP_LEFT,  
+         type: BMAP_NAVIGATION_CONTROL_LARGE  
+      });  
+    map.addControl(ctrlNav);  
+
+//向地图中添加缩略图控件  
+    var ctrlOve = new window.BMap.OverviewMapControl({  
+        anchor: BMAP_ANCHOR_BOTTOM_RIGHT,  
+        isOpen: 1  
+     });  
+    map.addControl(ctrlOve);  
+
+//向地图中添加比例尺控件  
+    var ctrlSca = new window.BMap.ScaleControl({  
+        anchor: BMAP_ANCHOR_BOTTOM_LEFT  
+      });  
+    map.addControl(ctrlSca);
+    
+       
+     function circos(){  	 
+    	 window.open ('circle.html' ) ; 	 
+     }
+     
+    var overlays_g = [];
+ 	var overlaycomplete = function(e){
+         overlays_g.push(e.overlay);
+     };
+     
+     var styleOptions = {
+             //圆和矩形和多边形样式
+    		 strokeColor:"light blue",    //边线颜色。
+             fillColor:"gray",      //填充颜色。当参数为空时，圆形将没有填充效果。
+             strokeWeight: 6,       //边线的宽度，以像素为单位。
+             strokeOpacity: 0.7,	   //边线透明度，取值范围0 - 1。
+             fillOpacity: 0.7,      //填充的透明度，取值范围0 - 1。
+             strokeStyle: 'solid' //边线的样式，solid或dashed。
+         }
+     
+     var lineStyleOptions = {
+         strokeColor:"green",    //边线颜色。
+         fillColor:"green",      //填充颜色。当参数为空时，圆形将没有填充效果。
+         strokeWeight: 3,       //边线的宽度，以像素为单位。
+         strokeOpacity: 0.7,	   //边线透明度，取值范围0 - 1。
+         fillOpacity: 0.7,      //填充的透明度，取值范围0 - 1。
+         strokeStyle: 'dashed' //边线的样式，solid或dashed。
+     }
+     //实例化鼠标绘制工具
+     var drawingManager = new BMapLib.DrawingManager(map, {
+         isOpen: false, //是否开启绘制模式
+         enableDrawingTool: true, //是否显示工具栏
+         drawingToolOptions: {
+             anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+             offset: new BMap.Size(5, 5), //偏离值
+         },
+         circleOptions: styleOptions, //圆的样式
+         polylineOptions: lineStyleOptions, //线的样式
+         polygonOptions: styleOptions, //多边形的样式
+         rectangleOptions: styleOptions //矩形的样式
+     });  
+ 	 //添加鼠标绘制工具监听事件，用于获取绘制结果
+     drawingManager.addEventListener('overlaycomplete', overlaycomplete);
+     function clearAll() {
+    	 //清除点线面绘制物，重新启用鼠标单击
+    	flag=0;
+ 		for(var i = 0; i < overlays_g.length; i++){
+             map.removeOverlay(overlays_g[i]);
+         }
+         overlays_g.length = 0;   
+     }
+     
+     //禁止鼠标单击事件
+     var flag = 0;
+     function leftKey()
+     {
+    	 //开始绘制点线面，使鼠标单击失效
+    	 alert("鼠标单击失效");
+		 flag=1;
+     }   
+     
+     var scale = new Array();
+     
+     function judge() {
+    	 
+    	 //alert("judge");
+    	 var bound1 = overlays_g[0].getBounds();  //圆形区域一
+    	 var bound2 = overlays_g[1].getBounds();  //圆形区域二
+    	 point1 = overlays_g[0].getCenter();      //圆形区域一中心点
+    	 point2 = overlays_g[1].getCenter();      //圆形区域二中心点
+    	 var pairPoints = [point1,point2];
+    	 scale[0] = new Array();
+    	 scale[1] = new Array();
+    	 //if(bound.containsPoint(points[300])){
+    		// alert("在区域内");
+    	//}
+    	 var i,j;
+    	 for(i=0;i<=points.length;i++){
+    		 if(bound1.containsPoint(points[i]))
+    			 {
+    			 for(j=0;j<rows.length;j++)
+    			 if(points[i].lng==rows[j].pointx&&points[i].lat==rows[j].pointy) scale[0].push(rows[j].id);
+    			 }
+    		 else if(bound2.containsPoint(points[i]))
+    		     {
+    			 for(j=0;j<rows.length;j++)
+    			 if(points[i].lng==rows[j].pointx&&points[i].lat==rows[j].pointy) scale[1].push(rows[j].id);
+    			 }
+    	 }
+    	 
+    	 //alert(scale[0].length);  //区域一中点的数量
+    	 //alert(scale[1].length);  //区域二中点的数量
+    	 
+    	 $.ajax({  
+             
+    		 dataType:"json",         //数据类型为json格式
+    		 traditional: true,
+             data:{"scale0":scale[0],"scale1":scale[1]},
+             contentType: "application/x-www-form-urlencoded; charset=UTF-8", 
+             type:"GET",  
+             url:"/HangZhou/scale",  
+             statusCode: {404: function() {  
+                  alert('page not found'); }  
+               },      
+             success:function(data,textStatus){ 
+          	    //alert(data.sum);
+          	    var curve = new BMapLib.CurveLine(pairPoints, {strokeColor:"blue", strokeWeight:0.2*data.sum, strokeOpacity:0.8}); //创建弧线对象
+          	    map.addOverlay(curve); //添加到地图中
+       		    addArrow(curve,1,Math.PI/6,"blue",data.sum[i]);
+             }
+             });
+
+    	}
+
+    </script>
+</body>
+</html>

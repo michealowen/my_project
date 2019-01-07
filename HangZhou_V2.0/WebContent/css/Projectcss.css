@@ -1,0 +1,155 @@
+html{
+	height: 100%;
+	width: 100%;
+	font-size: 10px;
+}
+
+body{
+	height: 100%;
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+	font-size: 1.7rem;
+}
+
+#top{
+	width:auto;
+	height:4rem;
+	text-align: center;
+	background: #393D49;
+	position:relative;
+}
+
+#top>span{
+	color: #fff;
+	line-height: 4rem;
+}
+
+.freshbtn{
+	border:none;
+	border-radius: 0.5rem;
+	outline:none;
+	margin-top: 1rem;
+	cursor:pointer;
+	text-align: center;
+	height:2rem;
+	width: 8rem;
+	background-color:#1E9FFF;
+}
+
+.freshbtn{
+  -webkit-transform: perspective(0.1rem) translateZ(0);
+  transform: perspective(0.1rem) translateZ(0);
+  position: relative;
+  -webkit-transition-property: color;
+  transition-property: color;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+}
+
+
+
+.freshbtn:hover{
+	color:#ffffff;
+}
+
+
+
+#allmap{
+	width:100%;
+	height:60rem;
+	font-family:"微软雅黑";
+	border-radius:0.3rem;
+}
+
+.middle{
+	width:auto;
+	height:4rem;
+	background: #2F4056;
+	border-radius: 0.1rem;
+	position:relative;
+	height: 4rem;
+	padding:0 0 0 2rem;
+}
+
+.middle>*{
+	display: inline-block;
+}
+
+.middle>span{
+	color: #fff;
+	line-height: 4rem;
+	font-size: 1.7rem;
+}
+
+#sel{
+	width: 5rem;
+	height: 2rem;
+	vertical-align: middle;
+	border-radius: 0.4rem;
+}
+
+#timeSel{
+	width: 14rem;
+	height: 2rem;
+	border-radius: 0.4rem;
+}
+
+.form{
+	display: inline-block;
+	font-family:"微软雅黑";
+	padding:0 0 0 1rem;
+}
+
+.btnarea{
+	float:right;
+	padding:0 1rem 0 0;
+}
+
+#main{
+	width:100%;
+	height:30rem;
+	position:absolute;
+}
+
+#rec{
+	width:5rem;
+	height:9rem;
+	background: linear-gradient(to bottom,  rgb(255,0,0), rgb(255,255,0), rgb(0,238,0));
+}
+
+.fiexdiv{
+	position:relative;
+	float:right;
+	top:-9.7rem;
+}
+
+.fiexdiv>*{
+	display:inline-block;
+}
+
+
+#lable1{
+	width:2rem;
+	height:1rem;
+	position:absolute;
+	top:60%;
+	left:95%;
+}
+
+#lable2{
+	width:2rem;
+	height:1rem;
+	position:absolute;
+	top:65%;
+	left:95%;
+}
+
+#lable3{
+	width:2rem;
+	height:1rem;
+	position:absolute;
+	top:70%;
+	left:95%;
+}
